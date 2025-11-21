@@ -1,7 +1,7 @@
 projectflow.txt
 Experiments/data.csv
 Experiments/iris.csv
-Experiments/fake_and _real_news.csv
+Experiments/fake_and_real_news.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
