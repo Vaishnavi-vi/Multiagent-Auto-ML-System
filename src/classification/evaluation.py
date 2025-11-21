@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
 
 def classification_evaluation_agent(state: MLState):
-    model = state.get("model")
+    model = state["best_model"]
     X_test = state.get("X_test")
     y_test = state.get("y_test")
     

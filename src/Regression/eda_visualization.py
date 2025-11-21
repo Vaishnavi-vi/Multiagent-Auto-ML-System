@@ -25,5 +25,4 @@ def regression_eda_visualization_agent(state: MLState):
         plt.xticks(rotation=45)
         plt.show()
     
-    
     return state
