@@ -21,6 +21,5 @@ def problem_detector_agent(state: MLState):
         problem_type = "classification"
 
     return {
-        **state,
         "problem_type": problem_type
     }
