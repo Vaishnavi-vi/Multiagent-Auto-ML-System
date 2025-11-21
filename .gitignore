@@ -4,6 +4,7 @@ Experiments/iris.csv
 Experiments/fake_and_real_news.csv
 envv
 .env
+ennv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
