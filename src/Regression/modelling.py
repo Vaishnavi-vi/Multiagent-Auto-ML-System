@@ -6,10 +6,10 @@ def regression_modeling_agent(state: MLState):
     from sklearn.linear_model import LinearRegression, Lasso, Ridge
     from sklearn.tree import DecisionTreeRegressor
     from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-    from sklearn.metrics import r2_score, mean_squared_error
+    from sklearn.metrics import r2_score, mean_squared_error,mean_absolute_error
 
-    x_train = state["X_train"]
-    x_test = state["X_test"]
+    x_train = state["x_train"]
+    x_test = state["x_test"]
     y_train = state["y_train"]
     y_test = state["y_test"]
     preprocess = state["preprocess"]
@@ -19,7 +19,7 @@ def regression_modeling_agent(state: MLState):
         "Lasso Regression": Lasso(),
         "Ridge Regression": Ridge(),
         "Decision Tree": DecisionTreeRegressor(),
-        "Random Forest": RandomForestRegressor(),
+        "Random Forest": RandomForestRegressor(max_iter=20),
         "Gradient Boosting": GradientBoostingRegressor(),
     }
 
@@ -37,19 +37,24 @@ def regression_modeling_agent(state: MLState):
 
         r2 = r2_score(y_test, y_pred)
         mse = mean_squared_error(y_test, y_pred)
+        mae=mean_absolute_error(y_test,y_pred)
 
         results[name] = {
-            "model": pipe,
             "r2_score": r2,
-            "mse": mse
+            "mse": mse,"mae":mae
         }
 
     # Pick best model by R²
-    best_model_name = max(results, key=lambda m: results[m]["r2_score"])
-    best_model = results[best_model_name]["model"]
+        if "best_model" not in state or r2 > state.get("best_score", 0):
+            state["best_model"] = pipe
+            state["best_model_name"] = name
+            state["best_score"] = r2
+    
+    
+    state["results"]=results
+    state["metrics"] = {name: res["r2_score"] for name, res in results.items()}
 
-    return {
-        "results": results,
-        "best_model_name": best_model_name,
-        "best_model": best_model
-    }
+
+    return state
+    
+

@@ -6,8 +6,8 @@ if __name__ == "__main__":
 
     # ---- Initial State ----
     initial_state = ({
-        "csv_path": "D:\\Desktop\\Multiagent-Auto-ML-System\\Experiments\\fake_and_real_news.csv",      # path to your dataset
-        "target": "label",           # target column name
+        "csv_path": "D:\\Desktop\\Multiagent-Auto-ML-System\\Experiments\\iris.csv" ,     # path to your dataset
+        "target": "species",           # target column name
     })
 
 

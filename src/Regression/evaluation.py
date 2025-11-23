@@ -4,11 +4,11 @@ import pandas as pd
 
 def regression_evaluation_agent(state: MLState):
     model = state["best_model"]
-    X_test = state.get("X_test")
+    x_test = state.get("x_test")
     y_test = state.get("y_test")
 
-    y_pred= model.predict(X_test)
-    y_pred_series=pd.Series(y_pred, index=y_test.index)
+    y_pred= model.predict(x_test)
+    y_pred_list = y_pred.tolist()
     metrics = {
             "mse": mean_squared_error(y_test,y_pred),
             "r2": r2_score(y_test,y_pred),
@@ -17,5 +17,5 @@ def regression_evaluation_agent(state: MLState):
 
     return {
         "metrics": metrics,
-        "y_pred":y_pred_series
+        "y_pred":y_pred_list
     }

@@ -2,6 +2,8 @@ projectflow.txt
 Experiments/data.csv
 Experiments/iris.csv
 Experiments/fake_and_real_news.csv
+Experiments/classification_dataset.csv
+Experiments/regression_data.csv
 envv
 .env
 ennv

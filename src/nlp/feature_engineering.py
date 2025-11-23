@@ -12,4 +12,4 @@ def nlp_feature_engineering_agent(state: MLState):
     state["features"] = X
     state["vectorizer"] = vectorizer
 
-    return {"features":X,"vectorizer":vectorizer}
+    return state

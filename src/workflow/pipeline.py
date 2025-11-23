@@ -9,7 +9,7 @@ from src.classification.cleaning_agent import classification_cleaning_agent
 from src.classification.eda_visualization import classification_eda_visualization_agent
 from src.classification.evaluation import classification_evaluation_agent
 from src.classification.feature_engineering import classification_feature_engineering_agent
-from src.classification.modeling import classification__modeling_agent
+from src.classification.modeling import classification_modeling_agent
 from src.classification.train_test_split import classification_train_test_split_agent
 from src.classification.visual_evaluation import classification_model_visualization_agent
 
@@ -31,9 +31,9 @@ from src.Regression.visual_evaluation import regression_model_visualization_agen
 
 
 def check_condition(state:MLState)->Literal["regression_cleaning_agent","classification_cleaning_agent","nlp_cleaning_agent"]:
-    if state["problem_type"]=="classification":
+    if state["problem_type"]=="Classification":
         return "classification_cleaning_agent"
-    elif state["problem_type"]=="nlp":
+    elif state["problem_type"]=="Nlp":
         return "nlp_cleaning_agent"
     else:
         return "regression_cleaning_agent"
@@ -65,7 +65,7 @@ graph.add_node("classification_cleaning_agent",classification_cleaning_agent)
 graph.add_node("classification_eda_visualization_agent",classification_eda_visualization_agent)
 graph.add_node("classification_feature_engineering_agent",classification_feature_engineering_agent)
 graph.add_node("classification_train_test_split_agent",classification_train_test_split_agent)
-graph.add_node("classification_modeling_agent",classification__modeling_agent)
+graph.add_node("classification_modeling_agent",classification_modeling_agent)
 graph.add_node("classification_evaluation_agent",classification_evaluation_agent)
 graph.add_node("classification_model_visualization_agent",classification_model_visualization_agent)
 

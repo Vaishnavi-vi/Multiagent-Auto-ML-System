@@ -1,8 +1,25 @@
 from src.state import MLState
+import pandas as pd
 
 def regression_cleaning_agent(state:MLState):
     df=state["df"]
     target=state["target"]
+    
+    numeric_features = df.select_dtypes(include="number").columns.to_list()
+    categorical_features = df.select_dtypes(exclude="number").columns.to_list()
+    
+    text_cols = df.select_dtypes(include=['object']).columns
+    text_cols = [col for col in text_cols if col != target]
+
+    df_numeric_only = df.drop(columns=text_cols)
+
+    if df_numeric_only.shape[1] > 1:  
+        df = df_numeric_only   
+
+    
+    missing_values = df.isnull().sum().to_dict()
+    basic_stats = df.describe().to_dict()
+    correlation = df.corr().to_dict()
     
     #Normalize column name
     df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
@@ -22,6 +39,9 @@ def regression_cleaning_agent(state:MLState):
     
     #Drop when null is greater than 0.8
     df = df.loc[:, df.isnull().mean() < 0.8]
+    
+    bool_cols = df.select_dtypes(include=["bool"]).columns
+    df[bool_cols] = df[bool_cols].astype(str)
     
     #outliers
     num_cols = df.select_dtypes(include=["int64", "float64"]).columns
@@ -43,4 +63,14 @@ def regression_cleaning_agent(state:MLState):
         # clip the values
         df[col] = df[col].clip(lower, upper)
     
-    return {"df":df,"cleaned":True}
+    # Update state
+    state["df"] = df
+    state["cleaned"] = True
+    state["numeric_features"] = numeric_features
+    state["categorical_features"] = categorical_features
+    state["missing_values"] = missing_values
+    state["basic_stats"] = basic_stats
+    state["correlation"] = correlation
+
+    return state
+

@@ -2,85 +2,87 @@ import streamlit as st
 import pandas as pd
 import requests
 import io
+from PIL import Image
+import base64
 
-FASTAPI_URL = "http://127.0.0.1:8000/run-automl"   # <-- your FastAPI endpoint
+FASTAPI_URL = "http://127.0.0.1:8000/run_automl"
 
+st.set_page_config(page_title="AutoML + NLP System", layout="wide")
 
+page = st.sidebar.radio("Go to", ["Home", "MultiAgent Auto-Ml + NLP System"])
 
-st.set_page_config(page_title="AutoML + NLP System", layout="wide",page_icon="Hey")
+if page == "Home":
+    st.image("")
 
-st.title("🤖 Multi-Agent AutoML + NLP System")
-st.write("Upload a CSV file and get complete analysis, EDA, modeling, and report.")
+elif page == "MultiAgent Auto-Ml + NLP System":
+    st.title("🤖 Multi-Agent AutoML + NLP System")
+    st.write("Upload a CSV file and get complete analysis, EDA, modeling, and report.")
 
+    # Sidebar upload
+    st.sidebar.header("Upload Your Dataset")
+    uploaded_file = st.sidebar.file_uploader("Upload CSV File", type=["csv"])
 
-# -------------------------
-# Sidebar
-# -------------------------
-st.sidebar.header("Upload Your Dataset")
+    if uploaded_file:
+        # Preview dataset
+        df = pd.read_csv(uploaded_file)
+        st.subheader("📄 Dataset Preview")
+        st.dataframe(df, use_container_width=True)
 
-uploaded_file = st.sidebar.file_uploader(
-    "Upload CSV File",
-    type=["csv"],
-    help="Upload your dataset in CSV format."
-)
+        # Select target column
+        target = st.sidebar.selectbox("Select Target Column", df.columns)
 
+        # Run pipeline button
+        if st.sidebar.button("Run AutoML Pipeline"):
+            st.info("⏳ Processing your dataset... Please wait.")
 
-# -------------------------
-# If file uploaded
-# -------------------------
-if uploaded_file:
-    # Read file
-    df = pd.read_csv(uploaded_file)
+            # Send request to API
+            response = requests.post(
+                FASTAPI_URL,
+                files={"file": ("uploaded.csv", uploaded_file.getvalue(), "text/csv")},
+                data={"target": target}
+            )
 
-    st.subheader("📄 Dataset Preview")
-    st.dataframe(df, use_container_width=True)
+            if response.status_code == 200:
+                result = response.json()
+                st.success("✔ Completed!")
 
-    # Choose target column
-    target = st.sidebar.selectbox(
-        "Select Target Column",
-        options=df.columns,
-        help="Choose the target column for AutoML/NLP."
-    )
+                # 🔹 Problem type
+                st.subheader("📊 Problem Type")
+                st.write(result.get("problem_type"))
 
-    # Run button
-    if st.sidebar.button(" Run AutoML Pipeline"):
-        st.info("⏳ Processing your dataset... Please wait.")
+                # 🔹 Best Model
+                st.subheader("🏆 Best Model")
+                st.write(result.get("best_model_name"))
 
-        # prepare file for FastAPI
-        file_data = uploaded_file.getvalue()
+                # 🔹 Metrics
+                st.subheader("📈 Metrics")
+                st.json(result.get("metrics"))
 
-        # send request to FastAPI
-        response = requests.post(
-            FASTAPI_URL,
-            files={"file": ("uploaded.csv", file_data, "text/csv")},
-            data={"target": target}
-        )
+                # 🔹 Visualizations
+                plots = result.get("plots", {})
+                if plots:
+                    st.subheader("📊 Visualizations")
+                    for name, img_b64 in plots.items():
+                        if img_b64:
+                            img_data = base64.b64decode(img_b64)
+                            img = Image.open(io.BytesIO(img_data))
+                            st.image(img, caption=name, use_container_width=True)
+                        else:
+                            st.warning(f"⚠ Could not display {name}")
+                else:
+                    st.warning("⚠ No plots received from API.")
 
-        if response.status_code == 200:
-            result = response.json()
+                # 🔹 Summary
+                st.subheader("📄 Summary Report")
+                st.write(result.get("summary"))
 
-            st.success("✔ Completed!")
+                # 🔹 All Models
+                st.subheader("📚 All Model Comparison")
+                st.json(result.get("results"))
 
-            # --------------------
-            # Show results
-            # --------------------
-            st.subheader("📊 Problem Type")
-            st.write(result.get("problem_type"))
+            else:
+                st.error("❌ Error from FastAPI: " + response.text)
 
-            st.subheader("🏆 Best Model")
-            st.write(result.get("best_model_name"))
+    else:
+        st.info("⬅ Upload a CSV file from the sidebar to begin.")
 
-            st.subheader("📈 Metrics")
-            st.json(result.get("metrics"))
-
-            st.subheader("📄 Summary Report")
-            st.write(result.get("summary"))
-
-            st.subheader("📚 All Model Comparison")
-            st.json(result.get("results"))
-
-        else:
-            st.error("❌ Error from FastAPI: " + response.text)
-
-else:
-    st.info("⬅ Upload a CSV file from the sidebar to begin.")
