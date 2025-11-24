@@ -9,10 +9,32 @@ FASTAPI_URL = "http://127.0.0.1:8000/run_automl"
 
 st.set_page_config(page_title="AutoML + NLP System", layout="wide")
 
-page = st.sidebar.radio("Go to", ["Home", "MultiAgent Auto-Ml + NLP System"])
+st.sidebar.image("C:\\Users\\Dell\\Downloads\\Multi-Agent Auto ML.png")
+
+st.sidebar.subheader("API Health Status")
+try:
+    health = requests.get("http://127.0.0.1:8000/health")
+    if health.status_code == 200:
+        st.sidebar.success("API Running")
+    else:
+        st.sidebar.error("API Not Responding")
+except:
+    st.sidebar.error("API Offline")
+
+page = st.sidebar.radio("Navigation", ["Home", "MultiAgent Auto-Ml + NLP System"])
 
 if page == "Home":
-    st.image("")
+    st.header("Multi Agent Auto ML")
+    st.image("C:\\Users\\Dell\\Downloads\\Multi-Agent Auto ML.png")
+    st.write("This project combines Automated Machine Learning (AutoML) with Natural Language Processing (NLP) to build an intelligent end-to-end text analysis pipeline. The system automatically performs data preprocessing, feature extraction, model selection and evaluation without requiring manual intervention.It supports tasks like text classification, sentiment analysis, and topic modeling, using techniques such as TF-IDF and modern optimization strategies. The AutoML engine selects the best NLP model based on performance metrics, while the pipeline is structured for scalability, reproducibility.")
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("About App")
+    st.sidebar.info("A project that uses AutoML with NLP to automatically clean text, extract features, try multiple models, and select the best-performing one for tasks like text classification or sentiment analysis")
+
+# Footer
+    st.sidebar.markdown("---")
+    st.sidebar.write("💡 *Created by Vaishnavi Barolia*")
+    
 
 elif page == "MultiAgent Auto-Ml + NLP System":
     st.title("🤖 Multi-Agent AutoML + NLP System")
@@ -46,19 +68,19 @@ elif page == "MultiAgent Auto-Ml + NLP System":
                 result = response.json()
                 st.success("✔ Completed!")
 
-                # 🔹 Problem type
+             
                 st.subheader("📊 Problem Type")
                 st.write(result.get("problem_type"))
 
-                # 🔹 Best Model
+          
                 st.subheader("🏆 Best Model")
                 st.write(result.get("best_model_name"))
 
-                # 🔹 Metrics
+               
                 st.subheader("📈 Metrics")
                 st.json(result.get("metrics"))
 
-                # 🔹 Visualizations
+               
                 plots = result.get("plots", {})
                 if plots:
                     st.subheader("📊 Visualizations")
@@ -81,7 +103,7 @@ elif page == "MultiAgent Auto-Ml + NLP System":
                 st.json(result.get("results"))
 
             else:
-                st.error("❌ Error from FastAPI: " + response.text)
+                st.error("Error from FastAPI: " + response.text)
 
     else:
         st.info("⬅ Upload a CSV file from the sidebar to begin.")

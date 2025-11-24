@@ -19,7 +19,7 @@ def regression_modeling_agent(state: MLState):
         "Lasso Regression": Lasso(),
         "Ridge Regression": Ridge(),
         "Decision Tree": DecisionTreeRegressor(),
-        "Random Forest": RandomForestRegressor(max_iter=20),
+        "Random Forest": RandomForestRegressor(),
         "Gradient Boosting": GradientBoostingRegressor(),
     }
 
